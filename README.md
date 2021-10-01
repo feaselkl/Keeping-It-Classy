@@ -1,28 +1,16 @@
-# Getting Beyond the Basics with Azure Machine Learning
+# Keeping It Classy:  Designing a Great Classifier
 
-This repository provides the supporting code for my presentation entitled [Beyond the Basics with Azure ML](https://www.catallaxyservices.com/presentations/beyond-the-basics-with-azureml/).
+This repository provides the supporting code for my presentation entitled [Keeping It Classy:  Designing a Great Classifier](https://www.catallaxyservices.com/presentations/keeping-it-classy/).
 
-## Generating Data
+## Data Sources
 
-You will need an Azure SQL Database in order to run some of these tests.  In the `data` folder, there is a dacpac file which contains all of the tables and data you will need for this.
+Campus recruitment dataset:
+https://www.kaggle.com/benroshan/factors-affecting-campus-placement
 
-## Running the Code
+Dry bean dataset:
+KOKLU, M. and OZKAN, I.A., (2020), “Multiclass Classification of Dry Beans Using Computer Vision and Machine Learning Techniques.” Computers and Electronics in Agriculture, 174, 105507. DOI: https://doi.org/10.1016/j.compag.2020.105507
+https://archive-beta.ics.uci.edu/ml/datasets/dry+bean+dataset
 
-### Basic Notebook
-
-Import the notebook in the `Notebook` folder into Azure Machine Learning.  You will need to create a compute instance to run this.
-
-### ML Pipeline
-
-In order to run the ML pipeline notebooks locally, you will need to have the following installed on your machine:
-
-* Python (preferably the Anaconda distribution)
-* The Azure CLI
-* The Azure ML Azure CLI extension
-* Pip packages:  `azureml-core`, `azureml-pipeline`
-* Visual Studio Code
-* The Azure ML Visual Studio Code extension
-
-## MLOps
-
-The MLOps examples come from the [MLOps with Azure ML](https://github.com/microsoft/MLOpsPython/) GitHub repo.
+Heart attack dataset:
+https://www.kaggle.com/rashikrahmanpritom/heart-attack-analysis-prediction-dataset
+Note that the imbalanced heart attack data is a custom modified version of this dataset as well.
