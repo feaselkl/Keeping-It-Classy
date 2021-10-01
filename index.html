@@ -1,0 +1,841 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Catallaxy Services | Keeping It Classy:  Designing a Great Classifier</title>
+
+		<link rel="stylesheet" href="../reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="../reveal.js/dist/reveal.css">
+		<link rel="stylesheet" href="../reveal.js/dist/theme/black.css" id="theme">
+		<link rel="stylesheet" href="../WebsiteAssets/mods.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="../reveal.js/plugin/highlight/monokai.css" id="highlight-theme">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h2>Keeping It Classy</h2>
+					<h3>Designing a Great Classifier</h3>
+					
+					<a href="https://www.catallaxyservices.com">Kevin Feasel</a> (<a href="https://twitter.com/feaselkl">@feaselkl</a>)<br />
+					<a href="https://csmore.info/on/classy">https://csmore.info/on/classy</a>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Who Am I?  What Am I Doing Here?</h3>
+					<div class="container">
+						<div class="col">
+							<table class="whoami">
+								<tr>
+									<td><a href="https://csmore.info"><img src="../WebsiteAssets/Logo.png" height="100" /></a></td>
+									<td nowrap><a href="https://csmore.info">Catallaxy Services</a></td>
+								</tr>
+								<tr>
+									<td><a href="https://curatedsql.com"><img src="../WebsiteAssets/CuratedSQLLogo.png" height="100" /></a></td>
+									<td nowrap><a href="https://curatedsql.com">Curated SQL</a></td>
+								</tr>
+								<tr>
+									<td><a href="https://csmore.info/on/training"><img src="../WebsiteAssets/Teachable.png" height="120" /></a></td>
+									<td nowrap><a href="https://csmore.info/on/training">Training on Teachable</a></td>
+								</tr>
+							</table>
+						</div>
+						<div class="col">
+							<a href="http://www.twitter.com/feaselkl"><img src="../WebsiteAssets/HeadShot.jpg" height="358" width="315" /></a>
+							<br />
+							<a href="http://www.twitter.com/feaselkl">@feaselkl</a>
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/motivation.jpg" data-background-opacity="0.2">
+					<h3>Motivation</h3>
+					
+					<p>My goals in this talk:</p>
+					
+					<ul>
+						<li>Explain what classification is.</li>
+						<li>Describe the benefits of classification algorithms.</li>
+						<li>Describe common tree- and non-tree-based algorithms.</li>
+						<li>Explain what the confusion matrix is.</li>
+						<li>Get a feeling for when we might wish to choose a particular classification algorithm.</li>
+					</ul>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Agenda</h3>
+					
+					<ol>
+						<li class="active">What Is Classification?</li>
+						<li>Tree-Based Algorithms</li>
+						<li>The Confusion Matrix</li>
+						<li>Non-Tree-Based Algorithms</li>
+						<li>Multi-Class Classification</li>
+						<li>Choosing a Classifier</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/drawers.jpg" data-background-opacity="0.2">
+					<h3>A Typical Problem Scenario</h3>
+					
+					<p>Classification is a flavor of <strong>supervised</strong> machine learning:  when we train a model, we have known good answers for our data (a <strong>label</strong>) as well as our <strong>features</strong>.</p>
+
+					<img src="presentation/assets/image/SupervisedLearning.png" height="400" />
+				</section>
+
+				<section data-background-image="presentation/assets/background/two-directions.jpg" data-background-opacity="0.2">
+					<h3>Two-Class Classification</h3>
+					
+					<div class="container">
+						<div class="col">
+							<p>The most common type of classification is <strong>two-class</strong> classification, where our label takes on one of two values.</p>
+							
+							<p>This can be Yes/No, True/False, In/Out, Win/Loss, 0/1, or whatever.</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/TwoClass.png" height="329" />
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/newspapers.jpg" data-background-opacity="0.2">
+					<h3>Multi-Class Classification</h3>
+					
+					<p><strong>Multi-class</strong> classification means our label may take on one of multiple values.  Common examples of multi-class classification include:</p>
+							
+					<ul>
+						<li>Choosing blog post categories based on text.</li>
+						<li>Selecting the best product category to list on Amazon.</li>
+						<li>Predicting if a new product will be Very Unprofitable, Unprofitable, Break-Even, Profitable, Very Profitable.</li>
+						<li>Sorting out which house you belong to at Hogwarts.</li>
+					</ul>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/target.jpg" data-background-opacity="0.2">
+					<h3>Gauging Model Quality</h3>
+					
+					<p>The first measure of model quality we will use today is <strong>accuracy</strong>.  We can define accuracy as:</p>
+							
+					$\dfrac{\sum{(Answers|Correct)}}{\sum{Answers}}$
+					
+					<p>In other words, the sum of correct answers divided by the sum of answers.  This ranges from 0-1, where 1 is perfection.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/robot.jpg" data-background-opacity="0.2">
+					<h3>A Quick Note on Deep Learning</h3>
+					
+					<p>Deep learning models have become popular in the machine learning landscape, and there are great things that we can build using neural networks.  Because of their level of complexity, however, we will not go into them today.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Agenda</h3>
+					
+					<ol>
+						<li>What Is Classification?</li>
+						<li class="active">Tree-Based Algorithms</li>
+						<li>The Confusion Matrix</li>
+						<li>Non-Tree-Based Algorithms</li>
+						<li>Multi-Class Classification</li>
+						<li>Choosing a Classifier</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/tree.jpg" data-background-opacity="0.2">
+					<h3>Decision Trees</h3>
+					
+					<p>A decision tree is one of the simplest algorithms available to us.  Think of it as a series of if-else statements leading to a final decision:</p>
+					
+					<img src="presentation/assets/image/DecisionTree.png" height="400" />
+				</section>
+
+				<section data-background-image="presentation/assets/background/cart.jpg" data-background-opacity="0.2">
+					<h3>CART</h3>
+					
+					<p>Classification and Regression Trees (CART) is a common implementation for decision trees.</p>
+					
+					<p>The key questions that CART (or any other decision tree implementation) needs to answer are:</p>
+					
+					<ol>
+						<li>Which variable do we split and at what value?</li>
+						<li>How do we decide when a branch shouldn't be split any further?</li>
+						<li>What label value should we predict at each terminal node?</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/stoplight.jpg" data-background-opacity="0.2">
+					<h3>Stopping Rules</h3>
+					
+					<p>Stopping rules tell CART when to stop driving down a particular branch.  Common stopping rules include:</p>
+					
+					<ul>
+						<li>Stop when we have a certain minimum number of cases in a node</li>
+						<li>Stop when all cases in a node have the same label</li>
+						<li>Stop after reaching a certain number of nodes in the branch/tree</li>
+					</ul>
+					
+					<p>The good news is that implementations, such as in the <code>scikit-learn</code> library, automatically have stopping rules built in, so you don't necessarily need to tune them.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/white-wall.jpg" data-background-opacity="0.6">
+					<h3>Choosing the Predictor</h3>
+					
+					<p>How do we choose which feature to split on in a node?  We look at feature importance for the remaining data in the tree:</p>
+					
+					<img src="presentation/assets/image/Predictor.png" height="350" />
+					
+					<p>In this case, our next split would be on <strong>age</strong>.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Useful Properties of CART</h3>
+					
+					<p>CART has some additional niceties:</p>
+					
+					<ul>
+						<li>CART does not rely on the data following a particular distribution.</li>
+						<li>Outliers do not affect CART very much.</li>
+						<li>CART allows you to use a test data set, as well as use cross-validation.</li>
+						<li>You can re-use variables multiple times in the same tree.</li>
+					</ul>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+
+				<section data-background-image="presentation/assets/background/forest.jpg" data-background-opacity="0.2">
+					<h3>Random Forest</h3>
+					
+					<p>The random forest algorithm is an <strong>ensemble</strong> algorithm, combining together decision trees using a technique called <strong>bagging</strong>.</p>
+					
+					<img src="presentation/assets/image/RandomForest.png" height="400" />
+				</section>
+
+				<section data-background-image="presentation/assets/background/backpacks.jpg" data-background-opacity="0.2">
+					<h3>Bagging</h3>
+					
+					<p>Bootstrap aggregation (aka bagging) is a technique used to reduce the variance of a statistical learning method.  In this case, bagging takes a variety of training sets from the population, builds separate prediction models for each training set, and averages the resulting predictions.</p>
+					
+					<img src="presentation/assets/image/Bagging.png" height="350" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<img src="presentation/assets/image/BaggingBlank.png" height="600" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<img src="presentation/assets/image/BaggingProcess.png" height="600" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Randomness in the Forest</h3>
+
+					<div class="container">
+						<div class="col">
+							<p>Another important element of the random forest algorithm is the term "random."  Whereas CART looks for the optimal feature based on remaining nodes, random forest chooses the optimal model from a <strong>randomly-selected subset</strong> of features.</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/FeatureSubselection.png" height="293" />
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+
+				<section data-background-image="presentation/assets/background/booster-rocket.jpg" data-background-opacity="0.2">
+					<h3>XGBoost</h3>
+					
+					<p>The random forest algorithm depends on bagging for its variety and generates independent trees in parallel.</p>
+					
+					<p>By contrast, Extreme Gradient Boosting (XGBoost) relies on <strong>boosting</strong> as a technique.</p>
+				</section>
+
+				<section data-background-image="presentation/assets/background/dominos.jpg" data-background-opacity="0.2">
+					<h3>Boosting</h3>
+					
+					<p>Boosting is another ensembling technique like bagging.  Unlike bagging, boosting is a <strong>sequential</strong> technique, meaning that it takes information learned from the prior model and uses it to get better.</p>
+				</section>
+
+				<section data-background-image="presentation/assets/background/tomatoes.jpg" data-background-opacity="0.2">
+					<h3>AdaBoost</h3>
+					
+					<p>Adaboost is a classic technique for ensemble learning.  In each stage of model training, we create a new weak learner to compensate for the shortcomings of existing weak learners.</p>
+					
+					<p>Specifically, AdaBoost looks at what data the prior model got wrong, weights the incorrect values more highly than correct values, and trains a new model, focusing on getting high-weight, incorrect values right.</p>
+				</section>
+
+				<section data-background-image="presentation/assets/background/gradient.jpg" data-background-opacity="0.2">
+					<h3>Gradient Boosting</h3>
+					
+					<p>Gradient boosting, meanwhile, identifies missed values based on gradients.</p>
+					
+					<p>Specifically, gradient boosting looks at <strong>how far off</strong> the prior model was and adds a modification factor intended to make more answers correct than before.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<img src="presentation/assets/image/BoostingBlank.png" height="550" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<img src="presentation/assets/image/BoostingProcess.png" height="550" />
+				</section>
+
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Agenda</h3>
+					
+					<ol>
+						<li>What Is Classification?</li>
+						<li>Tree-Based Algorithms</li>
+						<li class="active">The Confusion Matrix</li>
+						<li>Non-Tree-Based Algorithms</li>
+						<li>Multi-Class Classification</li>
+						<li>Choosing a Classifier</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/lab.jpg" data-background-opacity="0.2">
+					<h3>Accuracy Is Not Enough:  Class Imbalance</h3>
+					
+					<p>Suppose we want to detect a rare disease which affects 1 in 10,000 people.  Without a treatment of orange juice and toothpaste, these people will disappear in exactly three weeks.</p>
+					
+					<p>We train a model which is 99.99% accurate at discerning if a person has this disease.  Great, right?</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/surfer-crash.jpg" data-background-opacity="0.2">
+					<h3>The Model</h3>
+					
+					<p><code>Return:  Congratulations!  You don't have the disease!</code></p>
+					
+					<p>The model does get 9,999 out of 10,000 predictions correct, but it does a terrible job because it misses every single person with the disease!</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>The Confusion Matrix</h3>
+
+					<div class="container">
+						<div class="col">
+							<p>The <strong>confusion matrix</strong> compares reference (i.e., actual) results versus predictions for classification problems.</p>
+							
+							<p>It gives us information to solve the class imbalance problem.</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/ConfusionMatrix.png" />
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Accuracy</h3>
+
+					<div class="container">
+						<div class="col">
+							$\dfrac{\sum{(True Positive + True Negative)}}{\sum{Predictions}}$
+							
+							<p>In normal circumstances, accuracy is a really good baseline indicator for model quality.</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/Accuracy.png" />
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Positive Predictive Value</h3>
+
+					<div class="container">
+						<div class="col">
+							$\dfrac{\sum{(P_{pos}|R_{pos})}}{\sum{P_{pos}}}$
+							
+							<p>If my model predicts a particular class, what is the probability that this judgment is correct?</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/PPV.png" />
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Negative Predictive Value</h3>
+
+					<div class="container">
+						<div class="col">
+							$\dfrac{\sum{(P_{neg}|R_{neg})}}{\sum{P_{neg}}}$
+							
+							<p>If my model predicts <strong>not</strong> a particular class, what is the probability that this judgment is correct?</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/NPV.png" />
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Sensitivity</h3>
+
+					<div class="container">
+						<div class="col">
+							$\dfrac{\sum{(R_{pos}|P_{pos})}}{\sum{R_{pos}}}$
+							
+							<p>If an event is positive, how often do we predict positively?</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/Sensitivity.png" />
+						</div>					
+					</div>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Specificity</h3>
+
+					<div class="container">
+						<div class="col">
+							$\dfrac{\sum{(R_{neg}|P_{neg})}}{\sum{R_{neg}}}$
+							
+							<p>If an event is negative, how often do we predict negatively?</p>
+						</div>
+						<div class="col">
+							<img src="presentation/assets/image/Specificity.png" />
+						</div>					
+					</div>
+				</section>
+
+				<section data-background-image="presentation/assets/background/scale2.jpg" data-background-opacity="0.2">
+					<h3>Solving the Class Imbalance Problem</h3>
+					
+					<p>When dealing with class imbalance, we look in particular at <strong>sensitivity</strong> and <strong>specificity</strong>.</p>
+					
+					<p>In our health scenario, a <strong>specific</strong> test would do a great job of rejecting people who do not have the health condition.</p>
+					
+					<p>A <strong>sensitive</strong> test would do a great job of detecting people who have the health condition.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Agenda</h3>
+					
+					<ol>
+						<li>What Is Classification?</li>
+						<li>Tree-Based Algorithms</li>
+						<li>The Confusion Matrix</li>
+						<li class="active">Non-Tree-Based Algorithms</li>
+						<li>Multi-Class Classification</li>
+						<li>Choosing a Classifier</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/cat-dog-together.jpg" data-background-opacity="0.2">
+					<h3>K-Nearest Neighbors (kNN)</h3>
+					
+					<p>K-Nearest Neighbors is a distance-based algorithm for classifying input data.</p>
+					
+					<p>The short version is, when we get a new data point, we find the k nearest data points (using some distance measure) and choose the most common fit between these.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>kNN</h3>
+					
+					<img src="presentation/assets/image/knn.png" height="400" />
+					
+					<p>Here, the left-most new dot will be green (3G) and the right-most new dot will be orange (2O, 1B).</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/tags.jpg" data-background-opacity="0.2">
+					<h3>The Curse of Dimensionality</h3>
+					
+					<p>Distance-based classification algorithms are susceptible to bad results brought about by irrelevant attributes.  This is unlike regression, where irrelevant (but independent) features cannot harm the model.</p>
+					
+					<p>If you have multiple attributes which define a data point, but only a couple of them are relevant, two data points with similar important features might be spatially disparate because they differ so much in irrelevant features.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/binders.jpg" data-background-opacity="0.2">
+					<h3>Solving The Curse of Dimensionality</h3>
+					
+					<p>Examples of techniques:</p>
+					
+					<ul>
+						<li>Perform feature weighting, where each feature has a weight.  Adjust the weights according to classification error and continue until acceptable accuracy is achieved.</li>
+						<li>Iteratively remove the feature which most improves performance until you hit a cutoff point.  Retain those features you removed and drop the rest.</li>
+						<li>Perform gradient descent and train weights using cross-validation.</li>
+						<li>Perform dimensionality reduction using a technique like PCA.</li>
+					</ul>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/muay-thai.jpg" data-background-opacity="0.2">
+					<h3>Logistic Regression</h3>
+					
+					<p>Three phases of understanding logistic regression:</p>
+					
+					<ul>
+						<li>It's a regression algorithm--that's in the name!</li>
+						<li>It's not a regression algorithm; it's a classification algorithm in regression clothing</li>
+						<li>It's a regression algorithm which just happens to work well for classification</li>
+					</ul>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Logistic Regression</h3>
+					
+					<p>Logistic regression is built around the Sigmoid function.  This has the property of separating fairly cleanly into two outcomes:  0 and 1.</p>
+					
+					<img src="presentation/assets/image/SigmoidFunction.png" height="450" />
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Naive Bayes</h3>
+					
+					<p>Naive Bayes is not an algorithm; it is a class of algorithms. Naive Bayes is very easy to understand and reasonably accurate, making it a great class of algorithms to use when starting a classification project.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Naive Bayes Characteristics</h3>
+					
+					<p>Naive Bayes algorithms follow the general form:</p>
+					
+					<ul>
+						<li>Probabilistic -- calculate probabilities of each output category and choose the best one</li>
+						<li>Probabilities derived from Bayes' Theorem</li>
+						<li>Features are independent (hence the "naive" approach)</li>
+					</ul>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/golf-ball.jpg" data-background-opacity="0.2" data-markdown>
+					<textarea data-template>
+					### Shall We Golf?
+					
+					|Row|Outlook|Temp|Humidity|Windy|Golf?|
+					|---|-------|----|--------|-----|-----|
+					|0|Rainy|Hot|High|False|No|
+					|1|Rainy|Hot|High|True|No|
+					|2|Overcast|Hot|High|False|Yes|
+					|3|Sunny|Mild|High|False|Yes|
+					|4|Sunny|Cool|Normal|False|Yes|
+					|5|Sunny|Cool|Normal|True|No|
+					|6|Overcast|Cool|Normal|True|Yes|
+					</textarea>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/golf-ball.jpg" data-background-opacity="0.2" data-markdown>
+					<textarea data-template>
+					### Shall We Golf (cotd)?
+					
+					|Row|Outlook|Temp|Humidity|Windy|Golf?|
+					|---|-------|----|--------|-----|-----|
+					|7|Rainy|Mild|High|False|No|
+					|8|Rainy|Cool|Normal|False|Yes|
+					|9|Sunny|Mild|Normal|False|Yes|
+					|10|Rainy|Mild|Normal|True|Yes|
+					|11|Overcast|Mild|High|True|Yes|
+					|12|Overcast|Hot|Normal|False|Yes|
+					|13|Sunny|Mild|High|True|No|
+					</textarea>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/golf-course.jpg" data-background-opacity="0.2">
+					<h3>Solving the Problem</h3>
+					
+					<p>Goal:  determine, based on input conditions, whether we should golf.</p>
+					
+					<p>Steps:</p>
+
+					<ol>
+						<li>Find the probability of playing golf (prior probability).</li>
+						<li>Find the probability of golfing given each variable:  Outlook, Temp, Humidity, Wind.</li>
+						<li>Plug values from new data into our formula.</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/golf-water.jpg" data-background-opacity="0.2" data-markdown>
+					<textarea data-template>
+					### Prior Probability
+					
+					|Golf?|Count|P(Yes)/P(No)|
+					|-----|-----|------------|
+					|Yes|9|9/14|
+					|No|5|5/14|
+					|Total|14|100%|
+					</textarea>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/clouds.jpg" data-background-opacity="0.2" data-markdown>
+					<textarea data-template>
+					### Outlook
+					
+					|Outlook|Yes|No|P(Yes)|P(No)|
+					|-------|---|--|------|-----|
+					|Sunny|2|3|2/9|3/5|
+					|Overcast|4|0|4/9|0/5|
+					|Rainy|3|2|3/9|2/5|
+					|Total|9|5|100%|100%|
+					</textarea>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/ice.jpg" data-background-opacity="0.2" data-markdown>
+					<textarea data-template>
+					### Temperature
+					
+					|Temp|Yes|No|P(Yes)|P(No)|
+					|----|---|--|------|-----|
+					|Hot|2|2|2/9|2/5|
+					|Mild|4|2|4/9|2/5|
+					|Cool|3|1|3/9|1/5|
+					|Total|9|5|100%|100%|
+					</textarea>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/humidity.jpg" data-background-opacity="0.2" data-markdown>
+					<textarea data-template>
+					### Humidity
+					
+					|Humidity|Yes|No|P(Yes)|P(No)|
+					|--------|---|--|------|-----|
+					|High|3|4|3/9|4/5|
+					|Normal|6|1|6/9|1/5|
+					|Total|9|5|100%|100%|
+					</textarea>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/windy.jpg" data-background-opacity="0.2" data-markdown>
+					<textarea data-template>
+					### Windy
+					
+					|Windy|Yes|No|P(Yes)|P(No)|
+					|-----|---|--|------|-----|
+					|False|6|2|6/9|2/5|
+					|True|3|3|3/9|3/5|
+					|Total|9|5|100%|100%|
+					</textarea>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Testing a Day</h3>
+					
+					<p>Suppose <code>today = {Sunny, Hot, Normal, False}</code>.  Let's compare the <code>P(golf)</code> versus <code>P(no golf)</code>:
+
+					$P(Y|t) = \dfrac{P(O_s|Y) \cdot P(T_h|Y) \cdot P(H_n|Y) \cdot P(W_f|Y) \cdot P(Y)}{P(t)}$
+
+					$P(N|t) = \dfrac{P(O_s|N) \cdot P(T_h|N) \cdot P(H_n|N) \cdot P(W_f|N) \cdot P(N)}{P(t)}$
+
+					<p>Note the common denominator:  because we're comparing <code>P(Yes|today)</code> versus <code>P(No|today)</code>, the common denominator cancels out.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/golf-putt.jpg" data-background-opacity="0.2">
+					<h3>Testing a Day</h3>
+					
+					<p>Putting this in numbers:</p>
+					
+					<p>The relative likelihood of playing golf:</p>
+					
+					$P(Yes|today) = \dfrac{2}{9} \cdot \dfrac{2}{9} \cdot \dfrac{6}{9} \cdot \dfrac{6}{9} \cdot \dfrac{9}{14} = 0.0141$
+
+					<p>The relative likelihood of not playing golf:</p>
+					
+					$P(No|today) = \dfrac{3}{5} \cdot \dfrac{2}{5} \cdot \dfrac{1}{5} \cdot \dfrac{2}{5} \cdot \dfrac{5}{14} = 0.0068$
+					
+					<p>Time to golf!</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/thinking-emoji.jpg" data-background-opacity="0.2">
+					<h3>Online Passive-Aggressive Algorithms</h3>
+					
+					<p>Online Passive-Aggressive Algorithms are a margin-based set of online trainers.</p>
+					
+					<p>They follow three critical properties.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Online</h3>
+					
+					<p>Training happens one record at a time.</p>
+					
+					<img src="presentation/assets/image/PassiveAggressive1.png" height="400" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Passive</h3>
+					
+					<p>If we predict correctly, don't change the model--just move on to the next prediction.</p>
+					
+					<img src="presentation/assets/image/PassiveAggressive2.png" height="400" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Aggressive</h3>
+					
+					<p>If our prediction was incorrect, shift the curve until our latest prediction becomes correct.</p>
+					
+					<img src="presentation/assets/image/PassiveAggressive3.png" height="400" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>More Aggressive</h3>
+					
+					<p>The curve can shift along any relevant axis.</p>
+					
+					<img src="presentation/assets/image/PassiveAggressive4.png" height="400" />
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Most Aggressive</h3>
+					
+					<p>We only care about two things:  the <strong>current</strong> record and the curve.  Prior data points do <strong>not</strong> matter for the base algorithm, though there are variants which do include a few prior records.</p>
+					
+					<img src="presentation/assets/image/PassiveAggressive5.png" height="400" />
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Agenda</h3>
+					
+					<ol>
+						<li>What Is Classification?</li>
+						<li>Tree-Based Algorithms</li>
+						<li>The Confusion Matrix</li>
+						<li>Non-Tree-Based Algorithms</li>
+						<li class="active">Multi-Class Classification</li>
+						<li>Choosing a Classifier</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Always Two There Are, No More, No Less</h3>
+					
+					<p>So far, we've focused on two-class classification.  This is the most common scenario, and several algorithms--such as Logistic Regression and Passive-Aggressive--depend on this.</p>
+					
+					<p>Other algorithms, like tree-based algorithms, kNN, and Naive Bayes, can naturally support more than two classes.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Scott Pilgrim vs the World</h3>
+					
+					<p>To get two-class algorithms to work in a multi-class scenario, we can perform "one-versus-all" comparisons.</p>
+					
+					<p>Instead of calculating P(A), P(B), and P(C) separately, calculate P(A) versus P(Not A).  Then, calculate P(B) versus P(Not B) and then P(C) versus P(Not C).  Find which of the three has the highest probability and that's your winner.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/demo.jpg" data-background-opacity="0.2">
+					<h3>Demo Time</h3>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Agenda</h3>
+					
+					<ol>
+						<li>What Is Classification?</li>
+						<li>Tree-Based Algorithms</li>
+						<li>The Confusion Matrix</li>
+						<li>Non-Tree-Based Algorithms</li>
+						<li>Multi-Class Classification</li>
+						<li class="active">Choosing a Classifier</li>
+					</ol>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/monkey-thinking.jpg" data-background-opacity="0.2">
+					<h3>General Advice</h3>
+					
+					<ul>
+						<li>Don't get stuck on one algorithm!  Try out several for comparison.</li>
+						<li>Random forest and XGBoost are <strong>generally</strong> better than CART.</li>
+						<li>XGBoost can be better than random forest, especially as datasets grow larger.  Random forest gets <strong>slow</strong> and memory-intensive with large datasets.</li>
+						<li>kNN works best when there are few discontinuities in the data.  It works best when your neighbors are relevant.</li>
+						<li>Logistic Regression works best with very large datasets and independent features.</li>
+					</ul>
+				</section>
+				
+				<section data-background-image="presentation/assets/background/skeleton-thinking.jpg" data-background-opacity="0.2">
+					<h3>General Advice</h3>
+					
+					<ul>
+						<li>Naive Bayes is fast but usually not the most accurate.</li>
+						<li>Passive-Aggressive algorithms train extremely quickly and can be very accurate, but are prone to certain types of sequencing failures.</li>
+						<li>Passive-Aggressive algorithms scale extremely well to huge datasets because they keep relatively few items in memory and quickly "forget" prior data points.  They also work great in embedded devices, where memory is at a premium.</li>
+						<li>Accuracy is not the final measure!  Make use of the full confusion matrix.</li>
+					</ul>
+				</section>
+
+				<section data-background-image="presentation/assets/background/wrappingup.jpg" data-background-opacity="0.2">
+					<h3>Wrapping Up</h3>
+
+					<p>Over the course of this talk, we have looked at several classification algorithms and have seen how to use them in the scikit-learn Python package.  We've covered two-class and multi-class scenarios and have come up with reasonable guidelines around algorithm choice.</p>
+				</section>
+				
+				<section data-background-image="presentation/assets/image/Bubbles.jpg" data-background-opacity="0.4">
+					<h3>Wrapping Up</h3>
+					
+					<p>
+						To learn more, go here:
+						<br />
+						<a href="https://csmore.info/on/classy">https://csmore.info/on/classy</a>
+					</p>
+					<br />
+					<p>
+						And for help, contact me:
+						<br />
+						<a href="mailto:feasel@catallaxyservices.com">feasel@catallaxyservices.com</a> | <a href="https://www.twitter.com/feaselkl">@feaselkl</a>
+					</p>
+					<br />
+					<p>
+						Catallaxy Services consulting:
+						<br />
+						<a href="https://csmore.info/contact">https://CSmore.info/on/contact</a>
+					</p>
+				</section>
+			</div>
+		</div>
+
+		<script src="../reveal.js/dist/reveal.js"></script>
+		<script src="../reveal.js/plugin/zoom/zoom.js"></script>
+		<script src="../reveal.js/plugin/notes/notes.js"></script>
+		<script src="../reveal.js/plugin/search/search.js"></script>
+		<script src="../reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="../reveal.js/plugin/math/math.js"></script>
+		<script src="../reveal.js/plugin/menu/menu.js"></script>
+		<script src="../reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="../reveal.js/plugin/chart/Chart.min.js"></script>
+		<script src="../reveal.js/plugin/chart/plugin.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				width: '70%',
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				transition: 'fade',
+				
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight, RevealMath, RevealMenu, RevealChart ]
+			});
+		</script>
+	</body>
+</html>
