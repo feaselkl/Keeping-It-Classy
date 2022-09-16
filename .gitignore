@@ -337,3 +337,12 @@ ASALocalRun/
 Notebook/.ipynb_checkpoints/
 Pipeline/.azureml/
 Pipeline/tmp/
+notebooks/.ipynb_checkpoints/01 - CART-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/02 - Random Forest-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/03 - XGBoost-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/04 - Confusion Matrix-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/05 - K-Nearest Neighbors-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/06 - Logistic Regression-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/07 - Naive Bayes-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/08 - Passive Aggressive-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/09 - Multi-Class Classification-checkpoint.ipynb
