@@ -1,0 +1,7 @@
+scikit-learn
+numpy
+pandas
+matplotlib
+xgboost >= 2.0.3
+lightgbm >= 4.3.0
+graphviz >= 0.20.3
